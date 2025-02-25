@@ -31,7 +31,7 @@ END_Y = 1146    # 끝 Y 좌표: 스크린샷 영역의 오른쪽 하단 세로 �
 
 # 네이버 검색 열기 및 오늘 강수량 확인 함수
 def check_today():
-    url = "https://search.naver.com/search.naver?query=우산+챙겨야할까"
+    url = "https://search.naver.com/search.naver?query=오늘+강수량"
     webbrowser.open(url)
     time.sleep(5)  # 브라우저가 완전히 로드될 때까지 대기 (5초로 늘림)
 
