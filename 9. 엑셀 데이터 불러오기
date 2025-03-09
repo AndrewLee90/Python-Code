@@ -1,0 +1,112 @@
+import docx  # python-docx 모듈을 import하여 Word 문서를 조작할 수 있습니다.
+from docx.oxml.ns import qn  # qn 함수를 import하여 한글 폰트를 설정합니다.
+from docx.enum.text import WD_ALIGN_PARAGRAPH  # 텍스트 정렬을 위한 모듈을 import합니다.
+
+# 수료증 양식 문서를 불러옵니다.
+doc = docx.Document(r'12.엑셀의 정보를 불러와 수료증 자동생성 \수료증양식.docx')
+
+# 문서 스타일 설정
+style = doc.styles['Normal']  # 기본 스타일 가져오기
+style.font.name = '나눔고딕'  # 기본 글꼴 설정
+style.element.rPr.rFonts.set(qn('w:EastAsia'), '나눔고딕')  # 한글 폰트를 명시적으로 설정
+style.font.size = docx.shared.Pt(12)  # 기본 글꼴 크기 설정
+
+# 증서 번호 추가
+para = doc.add_paragraph()
+run = para.add_run('\n\n')
+run = para.add_run('          제 2020-0001호\n')
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:EastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+
+# 수료증 제목 추가
+para = doc.add_paragraph()
+run = para.add_run('\n\n')
+run = para.add_run('수  료  증') 
+run.font.name = '나눔고딕'
+run.bold = True
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(40)
+para.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 중앙 정렬
+
+# 수료증 내용 추가
+para = doc.add_paragraph()
+run = para.add_run('\n\n')
+run = para.add_run('        성       명: 장다인\n') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+run = para.add_run('        생 년 월 일: 2017.12.12\n') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+run = para.add_run('        교 육 과 정: 파이썬과 40개의 작품들\n')
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20) 
+run = para.add_run('        교 육 날 짜: 2021.08.05~2021.09.09\n') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+
+# 인증 문구 추가
+para = doc.add_paragraph() 
+run = para.add_run('\n\n')
+run = para.add_run('        위 사람은 파이썬과 40개의 작품들 교육과정을\n') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+run = para.add_run('        이수하였으므로 이 증서를 수여 합니다.\n') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+
+# 날짜 추가
+para = doc.add_paragraph()
+run = para.add_run('\n\n\n')
+run = para.add_run('2021.09.19') 
+run.font.name = '나눔고딕'
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+para.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 중앙 정렬
+
+# 기관명 추가
+para = doc.add_paragraph()
+run = para.add_run('\n\n\n')
+run = para.add_run('파이썬교육기관장') 
+run.font.name = '나눔고딕'
+run.bold = True
+run._element.rPr.rFonts.set(qn('w:eastAsia'), '나눔고딕')
+run.font.size = docx.shared.Pt(20)
+para.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 중앙 정렬
+
+# 수정된 문서를 저장합니다.
+doc.save(r'12. 엑셀의 정보를 불러와 수료증 자동생성\수료증결과.docx')
+
+
+
+** 학습내용 정리 **
+
+
+1. python-docx 모듈 사용법 python-docx를 활용해 Word 문서를 조작하는 방법을 학습합니다. 문서의 스타일, 텍스트 추가, 문단 정렬 등을 조정할 수 있습니다.
+
+2. 텍스트 스타일 지정
+
+글꼴(font.name)을 설정해 원하는 폰트를 적용하는 방법을 배웁니다.
+글꼴 크기(font.size)와 굵게(bold) 설정을 통해 텍스트 스타일을 지정하는 기법을 익힐 수 있습니다.
+_element.rPr.rFonts.set()를 사용하여 한국어 폰트를 명시적으로 설정하는 방법을 이해합니다.
+
+3. 문단 추가 및 정렬
+
+add_paragraph()로 문단을 추가하고, 텍스트를 삽입하는 과정을 배울 수 있습니다.
+WD_ALIGN_PARAGRAPH.CENTER를 통해 텍스트를 중앙 정렬하는 방식을 익힙니다.
+
+4. 문서 저장
+
+수정된 문서를 저장하기 위해 doc.save() 메서드를 사용하는 방법을 배웁니다.
+저장 경로와 파일명을 동적으로 지정하여 파일을 관리할 수 있습니다.
+
+5. 코드 구조화와 자동화
+
+여러 단계의 텍스트 삽입과 스타일링 작업을 함수화하거나 반복적으로 적용하는 코드 구조화를 연습할 수 있습니다.
+수료증과 같은 문서를 자동으로 생성하고 저장하는 프로세스를 구현하는 방법을 익힙니다.
