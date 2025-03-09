@@ -1,0 +1,84 @@
+import pyautogui  # pyautogui 모듈을 import하여 마우스, 키보드 자동화를 구현합니다.
+import time  # time 모듈을 import하여 시간 지연을 구현할 수 있습니다.
+import pyperclip  # pyperclip 모듈을 import하여 클립보드를 조작할 수 있습니다.
+
+# 검색할 지역별 날씨 키워드 리스트를 정의합니다.
+날씨 = ['서울 날씨', '제주 날씨', '부산 날씨', 
+      '자카르타 날씨', '발리 날씨', '더블린 날씨']
+
+# 네이버 주소창 위치 좌표
+addr_x = 2281
+addr_y = 387
+
+# 스크린샷 영역의 시작 좌표와 끝 좌표
+start_x = 1949
+start_y = 624
+end_x = 2709
+end_y = 1173
+
+# 현재 화면의 해상도를 확인합니다.
+screen_width, screen_height = pyautogui.size()
+print(f"Screen size: {screen_width}x{screen_height}")  # 화면 크기를 출력합니다.
+
+# 날씨 리스트에 있는 각 지역의 날씨를 검색하고 스크린샷으로 저장합니다.
+for 지역날씨 in 날씨:
+    pyautogui.moveTo(addr_x, addr_y, 1)  # 마우스를 네이버 주소창 위치로 이동합니다.
+    time.sleep(0.2)
+    pyautogui.click()  # 클릭하여 주소창에 커서를 맞춥니다.
+    time.sleep(0.2)
+    pyautogui.write('www.naver.com', interval=0.1)  # 네이버 주소를 입력합니다.
+    pyautogui.press('enter')  # 'enter' 키를 누릅니다.
+    time.sleep(1)
+
+    pyperclip.copy(지역날씨)  # 클립보드에 검색할 지역 날씨 키워드를 복사합니다.
+    pyautogui.hotkey('ctrl', 'v')  # 복사한 키워드를 붙여넣습니다.
+    time.sleep(0.5)
+    pyautogui.press('enter')  # 검색을 실행합니다.
+    time.sleep(3)
+
+    # 스크린샷의 저장 경로를 설정합니다.
+    저장경로 = 'd:\\INFO SECURITY\\강의교안\\파이썬\\' + 지역날씨 + '.png'
+
+    # 스크린샷 영역이 화면 범위를 벗어나지 않도록 조정합니다.
+    if start_x + (end_x - start_x) > screen_width:
+        end_x = screen_width
+    if start_y + (end_y - start_y) > screen_height:
+        end_y = screen_height
+
+    # 설정한 영역의 스크린샷을 찍어 저장 경로에 저장합니다.
+    pyautogui.screenshot(저장경로, region=(start_x, start_y, end_x-start_x, end_y-start_y))
+
+
+
+** 학습내용 정리 **
+
+
+1. pyautogui 모듈 사용법
+
+pyautogui를 활용해 마우스 이동, 클릭, 키 입력 등을 자동화하는 방법을 배웁니다.
+moveTo()와 click() 메서드로 화면상의 특정 위치를 제어하는 방식을 학습할 수 있습니다.
+write()와 press()를 사용해 키보드 입력을 자동으로 수행하는 작업을 이해할 수 있습니다.
+
+2. 화면 크기 확인 및 조정
+
+pyautogui.size()로 현재 화면의 해상도를 가져와 작업 영역을 설정할 수 있습니다.
+스크린샷 영역을 설정할 때 화면 경계를 벗어나지 않도록 조정하는 방법을 배울 수 있습니다.
+
+3. 클립보드 데이터 처리
+
+pyperclip을 사용해 텍스트를 클립보드에 복사하고, pyautogui.hotkey()로 붙여넣기(단축키 조합)를 실행하는 과정을 학습할 수 있습니다.
+
+4. 자동화된 스크린샷 저장
+
+pyautogui.screenshot()를 사용해 특정 영역의 화면을 캡처하고, 파일 경로와 이름을 지정하여 저장하는 방법을 배웁니다.
+스크린샷의 저장 경로를 동적으로 설정하고, 텍스트 데이터를 활용해 파일 이름을 지정하는 기법을 배울 수 있습니다.
+
+5. 반복문을 활용한 작업 흐름
+
+for 루프를 통해 여러 지역의 날씨 검색 및 스크린샷 저장 작업을 자동화하는 방법을 학습합니다.
+자동화 작업이 각 지역에 대해 반복적으로 수행되도록 설계하는 기법을 익힐 수 있습니다.
+
+6. 코드 논리 설계 및 디버깅
+
+작업의 흐름을 설계하며, 작업 간 순서와 작업 간격(time.sleep())을 적절히 조정하여 안정성을 높이는 방법을 배울 수 있습니다.
+자동화 작업 중 예기치 못한 동작에 대응하고 디버깅하며 코드를 점검하는 습관을 배울 수 있습니다.
