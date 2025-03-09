@@ -1,0 +1,157 @@
+## 얼굴 부분 확인 ##
+
+import numpy as np
+import cv2  # OpenCV 라이브러리 불러오기
+
+# 얼굴 및 눈 검출을 위한 Haar Cascade 분류기 로드
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
+# 이미지 파일을 바이너리 형식으로 읽어옴 (경로에 맞게 수정 필요)
+ff = np.fromfile(r'D:\INFO SECURITY\python\Code\23. 사진에서 얼굴만 찾아 모자이크처리 (OpenCV)\image.jpg', np.uint8)
+img = cv2.imdecode(ff, cv2.IMREAD_UNCHANGED)  # 이미지 디코딩
+
+# 이미지 크기 조정 (비율 유지)
+img = cv2.resize(img, dsize=(0, 0), fx=1.0, fy=1.0, interpolation=cv2.INTER_LINEAR)
+
+# 이미지를 흑백(그레이스케일)으로 변환
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 얼굴을 검출 (scaleFactor=1.2, minNeighbors=5 설정)
+faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+for (x, y, w, h) in faces:
+    # 검출된 얼굴을 사각형으로 표시 (파란색, 두께 2)
+    cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    
+    # 검출된 얼굴 영역을 따로 저장
+    roi_gray = gray[y:y + h, x:x + w]
+    roi_color = img[y:y + h, x:x + w]
+    
+    # 얼굴 영역 내에서 눈 검출 수행
+    eyes = eye_cascade.detectMultiScale(roi_gray)
+    for (ex, ey, ew, eh) in eyes:
+        # 검출된 눈을 사각형으로 표시 (초록색, 두께 2)
+        cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+
+# 결과 이미지 출력
+cv2.imshow('face find', img)
+cv2.waitKey(0)  # 키 입력 대기
+cv2.destroyAllWindows()  # 모든 창 닫기
+
+
+
+** 학습내용 정리 **
+OpenCV를 사용한 이미지 처리
+
+cv2.CascadeClassifier를 이용해 Haar Cascade 분류기를 로드하여 얼굴과 눈을 검출하는 방법을 학습합니다. 
+이미지 크기 조정, 그레이스케일 변환, 그리고 사각형을 그리는 등의 기본 이미지 처리 작업을 익힐 수 있습니다.
+
+Haar Cascade를 활용한 객체 검출
+
+사전 학습된 Haar Cascade 분류기를 사용하여 얼굴과 눈과 같은 특정 객체를 감지하는 방법을 배웁니다. 
+detectMultiScale() 메서드의 scaleFactor와 minNeighbors 매개변수를 조정하여 검출의 정확도와 속도를 최적화할 수 있습니다.
+
+이미지 읽기 및 디코딩
+
+np.fromfile()과 cv2.imdecode()를 사용하여 이미지 파일을 읽고, 
+OpenCV에서 처리할 수 있는 형식으로 디코딩하는 과정을 이해합니다. 
+파일 경로 설정 및 이미지 읽기 오류를 방지하는 방법을 익힐 수 있습니다.
+
+이미지의 색상 변환
+
+cv2.cvtColor()를 활용해 컬러 이미지를 그레이스케일로 변환하여, 
+성능 향상을 위해 필요한 전처리 작업을 학습합니다.
+
+ROI(Region of Interest) 처리
+
+얼굴이 검출된 영역을 별도로 저장(roi_gray 및 roi_color)하고 해당 영역 내에서 추가 작업(눈 검출)을 
+수행하는 방법을 배울 수 있습니다. 이미지 내 특정 영역을 조작하거나 처리할 수 있는 기법을 이해합니다.
+
+다중 객체 검출 및 시각화
+
+검출된 얼굴과 눈에 각각 사각형을 그려 표시하여 결과를 시각화하는 방법을 학습합니다. 
+얼굴은 파란색, 눈은 초록색 사각형으로 구분하여 시각적 결과를 명확히 표현합니다.
+
+OpenCV를 활용한 창 제어
+cv2.imshow()로 이미지를 출력하고, cv2.waitKey()와 cv2.destroyAllWindows()로 창을 제어하며 
+사용자 입력에 따라 프로그램을 종료하는 방법을 익힐 수 있습니다.
+
+
+
+## 모자이크 처리 방법 ##
+
+import numpy as np  # NumPy 라이브러리 임포트 (이미지 데이터를 다루기 위함)
+import cv2  # OpenCV 라이브러리 임포트 (이미지 처리 및 컴퓨터 비전 기능)
+
+# 얼굴 검출을 위한 Haarcascade 분류기 불러오기
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+# 눈 검출을 위한 Haarcascade 분류기 불러오기 (코드에서는 사용되지 않음)
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
+# 이미지 파일을 NumPy 배열로 불러오기 (경로의 이미지를 바이트 데이터로 읽음)
+ff = np.fromfile(r'D:\INFO SECURITY\python\Code\23. 사진에서 얼굴만 찾아 모자이크처리 (OpenCV)\image.jpg', np.uint8)
+
+# OpenCV의 imdecode()를 사용해 이미지 변환 (파일을 OpenCV에서 사용할 수 있는 형태로 디코딩)
+img = cv2.imdecode(ff, cv2.IMREAD_UNCHANGED)
+
+# 이미지 크기 조정 (배율 유지, 변경 없음)
+img = cv2.resize(img, dsize=(0, 0), fx=1.0, fy=1.0, interpolation=cv2.INTER_LINEAR)
+
+# 이미지를 그레이스케일로 변환 (얼굴 검출을 위해 명암 정보만 활용)
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+# 얼굴 검출 수행 (scaleFactor=1.2, minNeighbors=5 → 감지 민감도 조정)
+faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+
+# 검출된 얼굴마다 모자이크 처리 수행
+for (x, y, w, h) in faces:
+    face_img = img[y:y+h, x:x+w]  # 얼굴 영역 추출
+    face_img = cv2.resize(face_img, dsize=(0, 0), fx=0.05, fy=0.05)  # 얼굴 크기를 5%로 축소 (픽셀 블러 효과)
+    face_img = cv2.resize(face_img, (w, h), interpolation=cv2.INTER_AREA)  # 원래 크기로 확대 (모자이크 효과)
+    img[y:y+h, x:x+w] = face_img  # 모자이크 처리된 얼굴을 원본 이미지에 적용
+
+# 처리된 이미지를 화면에 표시
+cv2.imshow('face find', img)
+
+# 사용자가 키를 입력할 때까지 대기
+cv2.waitKey(0)
+
+# 모든 OpenCV 창 닫기
+cv2.destroyAllWindows()
+
+
+** 학습내용 정리 **
+
+OpenCV를 사용한 이미지 처리
+
+cv2.CascadeClassifier를 활용해 Haar Cascade 분류기를 로드하여 이미지에서 얼굴을 검출하는 방법을 학습합니다. 
+이미지 크기 조정, 색상 변환, 그리고 객체를 시각적으로 확인하기 위한 처리 과정을 익힐 수 있습니다.
+
+Haar Cascade 분류기를 사용한 객체 검출
+
+사전 학습된 Haar Cascade 분류기를 활용하여 얼굴을 감지하고, 
+detectMultiScale() 메서드의 scaleFactor와 minNeighbors 파라미터를 조정해 검출의 민감도와 정확도를 최적화하는 방법을 배웁니다.
+
+NumPy와 OpenCV를 통한 이미지 로드 및 디코딩
+
+np.fromfile()과 cv2.imdecode()를 사용하여 이미지 파일을 읽고 OpenCV에서 사용할 수 있는 형식으로 
+변환하는 방법을 이해할 수 있습니다. 이미지 데이터를 NumPy 배열로 변환하여 다룰 수 있습니다.
+
+이미지를 그레이스케일로 변환하여 성능 최적화
+
+cv2.cvtColor()를 사용해 컬러 이미지를 그레이스케일로 변환하여 명암 데이터만을 
+활용함으로써 검출 성능을 향상시키는 방법을 배웁니다.
+
+모자이크 처리를 통한 이미지 조작
+
+얼굴 영역을 추출한 후, 픽셀 크기를 축소하고 다시 확대하는 방식으로 모자이크 효과를 적용하는 기법을 학습합니다. 
+cv2.resize()를 사용해 이미지 크기를 동적으로 조정하고, INTER_LINEAR 및 INTER_AREA 보간법의 차이를 익힙니다.
+
+OpenCV를 활용한 시각적 결과 표시
+
+cv2.imshow()로 처리된 이미지를 표시하고, cv2.waitKey()와 cv2.destroyAllWindows()를 사용해 창을 제어하는 방법을 학습합니다.
+
+반복문을 통한 다중 객체 처리
+
+for 루프를 사용해 검출된 여러 얼굴 영역에 각각 모자이크 처리를 적용하며, 다중 객체를 효율적으로 다루는 기법을 배울 수 있습니다.
