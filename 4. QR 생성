@@ -1,0 +1,31 @@
+import qrcode  # qrcode 모듈을 import하여 QR 코드 생성 기능을 사용할 수 있습니다.
+
+qr_data = 'www.google.com'  # 생성할 QR 코드에 담을 데이터를 설정합니다.
+
+qr_img = qrcode.make(qr_data)  
+# qrcode.make() 메서드를 사용해 qr_data를 기반으로 QR 코드 이미지를 생성합니다.
+
+save_path = 'qr_google.png'  # 저장할 파일 이름과 경로를 설정합니다.
+
+qr_img.save(save_path)  
+
+
+** 학습내용 정리 **
+
+1. QR 코드 생성 모듈 사용법
+
+qrcode 라이브러리를 활용하여 QR 코드를 생성하는 방법을 학습합니다.
+qrcode.make() 메서드를 사용해 간단히 데이터를 QR 코드 이미지로 변환할 수 있습니다.
+
+2. 데이터 입력 및 변수 활용
+
+qr_data에 생성하려는 URL 또는 텍스트 데이터를 저장하고 이를 QR 코드에 활용하는 기본적인 데이터 처리 방법을 익힙니다.
+
+3. 파일 저장 처리
+
+생성한 QR 코드 이미지를 저장하기 위해 save() 메서드를 사용하는 방법을 배울 수 있습니다.
+저장 경로와 파일명을 정의하여 이미지 파일을 디스크에 저장하는 과정을 이해합니다.
+
+4. Python 모듈 import
+
+외부 모듈을 가져오는 import 구문의 기본 사용법과 모듈 호출 방식을 학습합니다.
