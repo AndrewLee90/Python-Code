@@ -1,0 +1,115 @@
+import pygame  # 파이게임 라이브러리를 가져옴 (게임 개발에 필요한 기능 제공)
+import sys    # 시스템 관련 기능을 가져옴 (프로그램 종료 등에 사용)
+
+FPS = 60      # 게임의 초당 프레임 수를 60으로 설정 (부드러운 움직임을 위해)
+MAX_WIDTH = 600   # 게임 창의 최대 너비를 600픽셀로 설정
+MAX_HEIGHT = 400  # 게임 창의 최대 높이를 400픽셀로 설정
+
+pygame.init()     # 파이게임을 초기화 (게임 시작 전 필수)
+clock = pygame.time.Clock()  # 게임의 프레임 속도를 제어하기 위한 클럭 객체 생성
+screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))  # 600x400 크기의 게임 창 생성
+
+class Player():   # 플레이어 캐릭터를 나타내는 클래스 정의
+    def __init__(self, x, y):  # 플레이어 객체를 초기화하는 메서드
+        self.x = x             # 플레이어의 x 좌표 설정
+        self.y = y             # 플레이어의 y 좌표 설정
+        self.isJump = False    # 점프 중인지 여부를 나타내는 변수 (기본값: False)
+        self.jumpCount = 10    # 점프의 높이와 지속 시간을 제어하는 카운터 (기본값: 10)
+
+    def draw(self):    # 플레이어를 화면에 그리는 메서드
+        return pygame.draw.rect(screen, (0,0,255), (self.x, self.y, 40,40))  # 파란색 40x40 사각형을 (x, y) 위치에 그림, 충돌 감지를 위해 사각형 객체 반환
+
+    def jump(self):    # 플레이어의 점프 동작을 처리하는 메서드
+        if self.isJump:    # 점프 중일 때만 실행
+            if self.jumpCount >= -10:  # 점프 카운터가 -10 이상일 때 (점프의 상승/하강 단계)
+                neg = 1        # 기본적으로 양수 방향 (위로 이동)
+                if self.jumpCount < 0:  # 카운터가 음수면 (하강 단계)
+                    neg = -1    # 음수 방향으로 전환 (아래로 이동)
+                self.y -= self.jumpCount**2 * 0.7 * neg  # y 좌표를 제곱 함수로 자연스럽게 이동
+                self.jumpCount -= 1  # 점프 카운터를 1씩 감소
+            else:    # 점프 카운터가 -10보다 작아지면 (점프 종료)
+                self.isJump = False  # 점프 상태 해제
+                self.jumpCount = 10  # 점프 카운터 초기화
+
+class Enemy():    # 적 캐릭터를 나타내는 클래스 정의
+    def __init__(self, x, y):  # 적 객체를 초기화하는 메서드
+        self.x = x    # 적의 x 좌표 설정
+        self.y = y    # 적의 y 좌표 설정
+    
+    def draw(self):   # 적을 화면에 그리는 메서드
+        return pygame.draw.rect(screen, (255,0,0), (self.x, self.y, 20, 40))  # 빨간색 20x40 사각형을 (x, y) 위치에 그림, 충돌 감지를 위해 사각형 객체 반환
+    
+    def move(self, speed):  # 적을 이동시키는 메서드
+        self.x = self.x - speed  # x 좌표를 주어진 속도만큼 왼쪽으로 이동
+        if self.x <= 0:    # 적이 화면 왼쪽 끝에 도달하면
+            self.x = MAX_WIDTH  # 화면 오른쪽 끝으로 이동 (재등장 효과)
+
+player = Player(50, MAX_HEIGHT - 40)  # 플레이어 객체 생성 (x=50, y=바닥에서 40픽셀 위)
+enemy = Enemy(MAX_WIDTH, MAX_HEIGHT - 40)  # 적 객체 생성 (x=오른쪽 끝, y=바닥에서 40픽셀 위)
+
+def main():    # 게임의 메인 루프를 정의하는 함수
+    speed = 7  # 적의 초기 이동 속도를 7로 설정
+
+    while True:    # 게임이 계속 실행되는 무한 루프
+        for event in pygame.event.get():  # 발생한 이벤트를 모두 확인
+            if event.type == pygame.QUIT:  # 창 닫기 버튼을 누르면
+                pygame.quit()    # 파이게임 종료
+                sys.exit()       # 프로그램 종료
+            if event.type == pygame.KEYDOWN:  # 키보드 입력 이벤트 발생 시
+                if event.key == pygame.K_SPACE:  # 스페이스 키를 누르면
+                    player.isJump = True  # 플레이어의 점프 상태 활성화
+
+        clock.tick(FPS)    # 게임을 초당 60프레임으로 제한
+        screen.fill((255, 255, 255))  # 화면을 흰색으로 채움 (이전 프레임 지우기)
+
+        player_rect = player.draw()  # 플레이어를 그리고 사각형 객체를 반환 (충돌 감지용)
+        player.jump()    # 플레이어의 점프 동작 실행
+
+        enemy_rect = enemy.draw()  # 적을 그리고 사각형 객체를 반환 (충돌 감지용)
+        enemy.move(speed)    # 적을 현재 속도로 이동
+        speed = speed + 0.01  # 적의 속도를 매 프레임마다 0.01씩 증가
+
+        if player_rect.colliderect(enemy_rect):  # 플레이어와 적이 충돌했는지 확인
+            print("충돌")    # 콘솔에 "충돌" 출력
+            pygame.quit()    # 파이게임 종료
+            sys.exit()       # 프로그램 종료
+
+        pygame.display.update()  # 화면을 업데이트하여 변경 사항 표시
+
+if __name__ == '__main__':  # 이 파일이 직접 실행될 때만 아래 코드 실행
+    main()    # 메인 함수 호출로 게임 시작
+
+
+
+
+** 학습내용 정리 **
+Pygame을 활용한 게임 개발
+
+pygame 라이브러리를 사용해 간단한 2D 게임을 구현하는 방법을 학습합니다. 
+게임 창 생성, 이벤트 처리, 그래픽 그리기, 프레임 속도 제한 등의 기본 게임 개발 과정을 익힐 수 있습니다.
+
+게임 루프와 이벤트 처리
+
+while 루프를 통해 게임이 실행되도록 유지하고, pygame.event.get()을 사용해 발생한 이벤트
+(예: 키 입력, 창 닫기)를 처리하는 방법을 배웁니다. 
+KEYDOWN 이벤트로 특정 키(스페이스바)를 감지하고 동작을 실행하는 기술도 포함됩니다.
+
+클래스 구조를 사용한 캐릭터 정의
+
+Player와 Enemy 클래스를 정의하여 플레이어와 적 캐릭터의 위치, 동작(점프, 이동)을 객체 지향적으로 구현하는 방법을 학습합니다. 
+각각의 메서드(draw, jump, move)를 통해 캐릭터의 동작을 캡슐화하는 방식을 이해할 수 있습니다.
+
+점프 및 충돌 감지 구현
+
+self.isJump, self.jumpCount를 이용해 플레이어 캐릭터의 점프 동작을 구현하며 자연스러운 상승 및 하강 효과를 추가합니다. 
+colliderect() 메서드를 사용하여 플레이어와 적의 충돌 여부를 감지하고, 충돌 시 프로그램을 종료하는 로직을 학습할 수 있습니다.
+
+적 이동 및 속도 증가
+
+move() 메서드를 통해 적 캐릭터가 왼쪽으로 이동하고, 화면 끝에 도달하면 다시 오른쪽 끝으로 재배치되는 기술을 익힐 수 있습니다. 
+적의 이동 속도를 매 프레임마다 증가시켜 점진적으로 게임 난이도를 높이는 방법을 학습합니다.
+
+게임 화면 업데이트 및 프레임 관리
+
+pygame.display.update()를 사용해 화면을 매 프레임 업데이트하고, 
+pygame.time.Clock() 객체로 프레임 속도를 제한(FPS 60)하여 부드러운 애니메이션을 구현합니다.
