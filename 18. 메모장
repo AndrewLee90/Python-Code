@@ -1,0 +1,90 @@
+from tkinter import *  # Tkinter 모듈 import
+from tkinter.filedialog import *  # 파일 저장을 위한 filedialog import
+
+# 새 파일 생성 함수
+def new_file():
+    text_area.delete(1.0, END)  # 텍스트 영역 초기화
+
+# 파일 저장 함수
+def save_file():
+    f = asksaveasfile(mode='w', defaultextenstion='.txt', filetypes=[('Text files', '.txt')])
+    text_save = str(text_area.get(1.0, END))  # 텍스트 영역의 내용을 가져옴
+    f.write(text_save)  # 파일에 작성
+    f.close()  # 파일 닫기
+
+# 만든이 정보 표시 함수
+def maker():
+    help_view = Toplevel(window)  # 새로운 창 생성
+    help_view.geometry('300x50+800+300')  # 창 크기 및 위치 설정
+    help_view.title('만든이')  # 창 제목 설정
+    lb = Label(help_view, text='정보보안교육 과정, 이성훈')  # 라벨 생성
+    lb.pack()  # 라벨 배치
+
+# Tkinter 윈도우 창 생성
+window = Tk()
+window.title('메모장')  # 창 제목 설정
+window.geometry('500x500+800+300')  # 창 크기 및 초기 위치 설정
+window.resizable(True, True)  # 창 크기 조정 가능
+
+# 메뉴 생성
+menu = Menu(window)
+menu_1 = Menu(menu, tearoff=0)
+menu_1.add_command(label="새파일", command=new_file)  # 새 파일 메뉴 추가
+menu_1.add_command(label="저장", command=save_file)  # 저장 메뉴 추가
+menu_1.add_separator()  # 구분선 추가
+menu_1.add_command(label="종료", command=window.destroy)  # 종료 메뉴 추가
+menu.add_cascade(label="파일", menu=menu_1)  # 파일 메뉴 추가
+
+menu_2 = Menu(menu, tearoff=0)
+menu_2.add_command(label="만든이", command=maker)  # 만든이 메뉴 추가
+menu.add_cascade(label="만든이", menu=menu_2)  # 만든이 메뉴 추가
+
+# 텍스트 영역 생성
+text_area = Text(window)
+window.grid_rowconfigure(0, weight=1)  # 텍스트 영역 행 크기 조정
+window.grid_columnconfigure(0, weight=1)  # 텍스트 영역 열 크기 조정
+text_area.grid(sticky=N + E + S + W)  # 텍스트 영역 배치
+
+# 메뉴 설정
+window.config(menu=menu)
+
+# Tkinter 메인 루프 실행
+window.mainloop()
+
+# (PyInstaller 대소문자 구별)
+# $ python -m pip install pyinstaller
+# $ python -m PyInstaller --onefile --windowed notepad.py
+# .exe 파일은 dist 폴더 안에 생성됩니다.
+
+
+
+
+** 학습내용 정리 **
+
+Tkinter를 활용한 GUI 애플리케이션 구축
+tkinter를 사용해 간단한 메모장 애플리케이션을 만드는 방법을 학습합니다. 
+창 생성, 메뉴 추가, 텍스트 영역 관리 등의 기본 GUI 기능을 구현할 수 있습니다.
+
+파일 관리 기능 구현
+
+asksaveasfile()를 사용해 사용자로부터 저장 파일명과 경로를 입력받고, 
+텍스트 데이터를 저장하는 방법을 배울 수 있습니다. delete()와 get() 메서드를 활용해 텍스트 위젯 데이터를 초기화하거나 가져오는 방식을 학습합니다.
+
+메뉴 구성 및 이벤트 처리
+
+Menu와 add_command()를 이용해 메뉴 항목을 생성하고, 해당 메뉴가 클릭될 때 실행할 함수(이벤트 처리)를 연결하는 기술을 익힐 수 있습니다. 
+메뉴 간 구분선 추가를 위한 add_separator() 사용법도 포함됩니다.
+
+새 창 생성 및 사용자 정보 제공
+
+Toplevel()을 통해 새 창을 생성하고, 창 크기와 제목을 설정하는 방법을 배울 수 있습니다. 
+Label 위젯을 활용해 텍스트를 표시하는 방법을 익힐 수 있습니다.
+
+Tkinter의 창 크기 조정 및 배치 관리
+
+geometry()를 사용해 창의 크기와 위치를 설정하고, resizable()을 사용해 창 크기 조정 가능 여부를 지정하는 기술을 배웁니다. 
+grid_rowconfigure()와 grid_columnconfigure()를 사용해 위젯 배치를 유연하게 조정하는 방법을 학습합니다.
+
+PyInstaller를 사용한 실행 파일 생성
+
+pyinstaller를 사용해 Python 스크립트를 .exe 실행 파일로 변환하고, 생성된 파일을 배포 가능한 형태로 만드는 과정을 익힐 수 있습니다.
