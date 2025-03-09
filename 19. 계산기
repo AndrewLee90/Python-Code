@@ -1,0 +1,123 @@
+pyQT 는 Python에서 Qt 프레임 워크를 사용할 수 있도록 해주는 라이브러리로, GUI(그래픽 사용자 인터페이스) 애플리케이션을 개발하는 데 사용
+데스크톱, 모바일, 임베디드 환경에서 동작하는 애플리케이션을 만들 수 있음
+
+qtdeisgner를 활용, UI파일이 있다는 조건 하에 실행.
+
+
+import sys  # 시스템 관련 기능을 제공하는 sys 모듈을 가져옴
+from PyQt5.QtWidgets import *  # PyQt5의 GUI 관련 위젯들을 가져옴
+from PyQt5 import uic  # Qt Designer로 만든 UI 파일을 로드하는 모듈 가져옴
+
+# Qt Designer에서 만든 UI 파일 경로 설정
+ui_path = "D:\\INFO SECURITY\\python\\Code\\33.calculator\\calculator.ui"
+# UI 파일을 로드하여 form_class 변수에 저장
+form_class = uic.loadUiType(ui_path)[0] 
+
+# 메인 윈도우 클래스 정의
+class WindowClass(QMainWindow, form_class):  
+    def __init__(self):  # 생성자 함수
+        super().__init__()  # 부모 클래스(QMainWindow) 초기화
+        self.setupUi(self)  # UI 파일에서 불러온 디자인을 설정
+
+        # 버튼 클릭 시 실행할 함수(btn_clicked)를 연결
+        self.btn_C.clicked.connect(self.btn_clicked)
+        self.btn_num0.clicked.connect(self.btn_clicked)
+        self.btn_num1.clicked.connect(self.btn_clicked)
+        self.btn_num2.clicked.connect(self.btn_clicked)
+        self.btn_num3.clicked.connect(self.btn_clicked)
+        self.btn_num4.clicked.connect(self.btn_clicked)
+        self.btn_num5.clicked.connect(self.btn_clicked)
+        self.btn_num6.clicked.connect(self.btn_clicked)
+        self.btn_num7.clicked.connect(self.btn_clicked)
+        self.btn_num8.clicked.connect(self.btn_clicked)
+        self.btn_num9.clicked.connect(self.btn_clicked)
+        self.btn_result.clicked.connect(self.btn_clicked)
+        self.btn_minus.clicked.connect(self.btn_clicked)
+        self.btn_add.clicked.connect(self.btn_clicked)
+        self.btn_multiply.clicked.connect(self.btn_clicked)
+        self.btn_divide.clicked.connect(self.btn_clicked)
+
+        self.le_view.setEnabled(False)  # 입력창 비활성화 (직접 입력 불가)
+        
+        # 전체 스타일 설정: QLineEdit(입력창)과 QPushButton(버튼)에 스타일 적용
+        self.setStyleSheet("""
+            QLineEdit {
+                border: 2px solid blue;  /* 입력창 테두리 색상 (파란색) */
+                font-size: 18px;  /* 글자 크기 설정 */
+            }
+            QPushButton {
+                border: 2px solid green;  /* 버튼 테두리 색상 (초록색) */
+                font-size: 16px;  /* 버튼 글자 크기 설정 */
+                background-color: white;  /* 버튼 배경색 (흰색) */
+            }
+        """)
+
+        self.text_value = ""  # 입력된 값을 저장할 문자열 변수 초기화
+
+    def btn_clicked(self):  # 버튼 클릭 시 실행되는 함수
+        btn_value = self.sender().text()  # 클릭한 버튼의 텍스트 값 가져오기
+        
+        if btn_value == 'C':  # 'C' 버튼을 눌렀을 경우 (초기화)
+            print("clear")  # 콘솔에 clear 출력
+            self.le_view.setText("0")  # 입력창을 "0"으로 설정
+            self.text_value = ""  # 저장된 입력값 초기화
+        elif btn_value == '=':  # '=' 버튼을 눌렀을 경우 (결과 계산)
+            print("=")  # 콘솔에 = 출력
+            try:
+                resultValue = eval(self.text_value.lstrip("0"))  # 문자열 계산식 실행 (좌측 0 제거)
+                self.le_view.setText(str(resultValue))  # 결과를 문자열로 변환 후 입력창에 표시
+            except:
+                self.le_view.setText("error")  # 오류 발생 시 "error" 출력
+        else:
+            if btn_value == 'X':  # 'X' 버튼이 눌렸다면 '*'로 변경 (곱하기 연산)
+                btn_value = '*'
+            self.text_value = self.text_value + btn_value  # 버튼 값을 기존 입력값에 추가
+            print(self.text_value)  # 현재 입력된 값 출력
+            self.le_view.setText(self.text_value)  # 입력창에 값 업데이트
+
+# 프로그램 실행 부분
+if __name__ == "__main__":  
+    app = QApplication(sys.argv)  # PyQt 애플리케이션 객체 생성
+    myWindow = WindowClass()  # 윈도우 클래스 객체 생성
+    myWindow.show()  # 윈도우 표시
+    app.exec_()  # 이벤트 루프 실행
+
+
+
+
+** 학습내용 정리 **
+PyQt5를 활용한 GUI 애플리케이션 구축
+
+PyQt5를 사용해 GUI 애플리케이션을 개발하는 방법을 학습합니다. 
+UI 파일을 로드하여 GUI 디자인과 Python 코드를 통합하는 기술을 익힐 수 있습니다.
+
+Qt Designer를 이용한 UI 설계
+
+uic.loadUiType()을 통해 Qt Designer로 설계한 .ui 파일을 로드하고, 
+이를 Python 코드와 연동하여 활용하는 방식을 학습합니다.
+
+위젯 이벤트 연결
+
+버튼 클릭 시 특정 함수가 실행되도록 clicked.connect()를 사용하여 위젯 이벤트를 연결하는 방법을 익힐 수 있습니다. 
+각 버튼에 동일한 함수(btn_clicked)를 연결하여 효율적으로 이벤트를 처리하는 방법도 포함됩니다.
+
+텍스트 입력 필드 비활성화
+
+setEnabled(False)를 사용해 입력창(QLineEdit)을 비활성화하여 사용자로부터 직접 입력을 제한하는 기술을 학습합니다.
+
+스타일 설정
+
+setStyleSheet()를 통해 위젯의 스타일을 정의하여 입력창과 버튼의 외형(테두리, 글꼴 크기, 배경색 등)을 사용자 지정하는 방법을 익힙니다.
+
+계산기 기능 구현
+
+eval() 함수를 사용해 문자열로 작성된 수식을 계산하여 결과를 출력하는 방법을 학습합니다. 버튼 입력 값을 문자열로 누적하고, 
+'=' 버튼 클릭 시 이를 계산하여 출력하는 구조를 구현합니다.
+
+오류 처리
+
+try-except 블록을 사용해 계산 중 발생하는 오류를 처리하고, 오류 발생 시 사용자에게 "error"를 출력하는 방법을 익힐 수 있습니다.
+
+프로그램 실행 구조 이해
+
+if __name__ == "__main__": 구문을 통해 이 스크립트가 직접 실행될 때만 애플리케이션을 실행하도록 제어하는 방법을 배울 수 있습니다.
