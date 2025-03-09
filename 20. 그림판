@@ -1,0 +1,109 @@
+import sys
+from PyQt5 import QtGui, uic
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
+from PyQt5.QtCore import *
+
+# UI 파일을 로드하여 클래스 형태로 변환
+ui_path = r'./paintshop3.ui'
+form_class = uic.loadUiType(ui_path)[0]
+
+# 메인 윈도우 클래스 정의
+class WindowClass(QMainWindow, form_class):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)  # UI 설정 적용
+        
+        self.brushColor = Qt.black  # 기본 브러쉬 색상을 검정으로 설정
+
+        # 캔버스를 QPixmap으로 생성 (그림을 그릴 공간)
+        self.canvas = QtGui.QPixmap(self.lb_canvas.width(), self.lb_canvas.height())
+        self.canvas.fill(QtGui.QColor('white'))  # 초기 배경색을 흰색으로 설정
+        self.lb_canvas.setPixmap(self.canvas)  # UI의 QLabel에 캔버스 설정
+
+        # 버튼 클릭 시 색상을 변경하도록 연결
+        self.btn_black.clicked.connect(self.btn_clicked)
+        self.btn_black.setStyleSheet('background:black')
+
+        self.btn_red.clicked.connect(self.btn_clicked)
+        self.btn_red.setStyleSheet('background:red')
+
+        self.btn_blue.clicked.connect(self.btn_clicked)
+        self.btn_blue.setStyleSheet('background:blue')
+
+        # '모두 지우기' 버튼 클릭 시 실행될 함수 연결
+        self.btn_clear.clicked.connect(self.btn_clear_clicked) 
+
+    # 색상 버튼 클릭 시 실행될 함수
+    def btn_clicked(self):
+        btn_value = self.sender().objectName()  # 클릭한 버튼의 이름 가져오기
+        print(btn_value)  # 디버깅용 출력
+
+        # 버튼 이름에 따라 브러쉬 색상 변경
+        if btn_value == 'btn_black':
+            self.brushColor = Qt.black
+        elif btn_value == 'btn_red':
+            self.brushColor = Qt.red
+        elif btn_value == 'btn_blue':
+            self.brushColor = Qt.blue
+
+    # '모두 지우기' 버튼 클릭 시 실행될 함수
+    def btn_clear_clicked(self):
+        print('모두지움')  # 디버깅용 출력
+        self.canvas.fill(QtGui.QColor('White'))  # 캔버스를 흰색으로 채움
+        self.lb_canvas.setPixmap(self.canvas)  # 변경된 캔버스를 QLabel에 적용
+        self.update()  # 화면 갱신
+
+    # 마우스를 움직일 때 실행되는 이벤트 (그림 그리기)
+    def mouseMoveEvent(self, e):
+        painter = QtGui.QPainter(self.lb_canvas.pixmap())  # 현재 캔버스를 가져와서 QPainter 사용
+        painter.setPen(QPen(self.brushColor, 5, Qt.SolidLine, Qt.RoundCap))  # 펜 설정 (선 두께 5, 둥근 모서리)
+        painter.drawPoint(e.x(), e.y())  # 마우스 위치에 점 그리기
+        painter.end()  # QPainter 종료
+        self.update()  # 화면 갱신
+
+# 메인 실행 코드
+if __name__ == "__main__":
+    app = QApplication(sys.argv)  # QApplication 객체 생성
+    myWindow = WindowClass()  # 메인 윈도우 객체 생성
+    myWindow.show()  # 윈도우 실행
+    app.exec_()  # 이벤트 루프 실행
+
+
+
+** 학습내용 정리 **
+PyQt5를 활용한 GUI 애플리케이션 개발
+
+PyQt5를 사용해 GUI 애플리케이션을 개발하는 방법을 학습합니다. 
+UI 파일을 로드하여 Qt Designer로 설계한 레이아웃과 Python 코드를 통합하는 기술을 익힐 수 있습니다.
+
+캔버스 생성 및 그림 그리기
+
+QPixmap을 사용해 캔버스를 생성하고, QPainter를 활용하여 마우스 이벤트에 따라 그림을 그리는 방법을 배울 수 있습니다. 
+펜 설정(setPen)을 통해 선의 두께, 모양, 색상을 설정하고 drawPoint()로 점을 찍는 기술을 익힐 수 있습니다.
+
+버튼 이벤트 처리
+
+clicked.connect()를 사용해 버튼 클릭 시 특정 함수가 실행되도록 이벤트를 연결하는 방식을 이해할 수 있습니다. 
+버튼 클릭 이벤트에 따라 브러쉬 색상을 변경하거나 캔버스를 초기화하는 기능을 구현합니다.
+
+마우스 이벤트 처리
+
+mouseMoveEvent를 통해 마우스 움직임에 따라 이벤트를 감지하고 이를 캔버스에 반영하는 기술을 학습합니다. 
+마우스 위치(e.x(), e.y())를 이용하여 사용자가 그림을 그릴 수 있도록 설계합니다.
+
+스타일시트 설정
+
+setStyleSheet()를 사용해 버튼의 배경색을 변경하여 사용자 인터페이스를 시각적으로 개선하는 방법을 익힐 수 있습니다.
+
+'모두 지우기' 기능 구현
+
+버튼 클릭 이벤트에 따라 캔버스를 초기 상태(흰색)로 변경하고 화면을 갱신(update())하는 방법을 학습합니다.
+
+UI 파일과 클래스 연동
+
+uic.loadUiType()을 활용해 외부 .ui 파일을 Python 코드에서 사용할 수 있도록 로드하고, 이를 통해 인터페이스와 로직을 연결하는 기술을 이해합니다.
+
+프로그램의 실행 구조
+
+if __name__ == "__main__":를 사용해 이 스크립트가 메인 프로그램으로 실행될 때만 애플리케이션을 실행하는 구조를 익힐 수 있습니다.
