@@ -1,1 +1,74 @@
+import os  # os 모듈을 사용하여 디렉터리 생성 및 경로 관리를 수행합니다.
+import requests  # requests 모듈을 사용하여 HTTP 요청을 보냅니다.
+import re  # re 모듈을 사용하여 정규표현식으로 데이터를 검색합니다.
+from openpyxl import load_workbook, Workbook  # openpyxl 모듈을 사용하여 엑셀 파일을 관리합니다.
 
+# 저장할 폴더와 파일 경로 설정
+folder_path = r"13.이메일을 수집하여 엑셀에 기록하기"
+file_path = os.path.join(folder_path, "email.xlsx")
+
+# 디렉터리가 없으면 생성
+if not os.path.exists(folder_path):
+    os.makedirs(folder_path)
+
+# 대상 URL과 요청 헤더 설정
+url = 'https://news.v.daum.net/v/20211129144552297'
+headers = {'user-agent': 'mozilla/5.0', 'content-type': 'text/html; charset=utf-8'}
+
+# HTTP GET 요청
+response = requests.get(url, headers=headers)
+
+# 정규표현식을 사용하여 이메일 주소 추출
+results = re.findall(r'[\w\.-]+@[\w\.-]+', response.text)
+results = list(set(results))  # 중복 제거
+print(results)  # 추출된 이메일 주소 출력
+
+# 엑셀 파일 로드 또는 생성
+try:
+    wb = load_workbook(file_path, data_only=True)
+    sheet = wb.active
+except FileNotFoundError:
+    # 파일이 없으면 새 엑셀 파일 생성 및 헤더 추가
+    wb = Workbook()
+    sheet = wb.active
+    sheet.append(["Email Address"])  # 첫 실행 시 헤더 추가
+
+# 추출된 이메일 주소를 엑셀에 기록
+for result in results:
+    sheet.append([result])
+
+# 엑셀 파일 저장
+wb.save(file_path)
+
+
+
+** 학습내용 정리 **
+1. os 모듈을 활용한 디렉터리 생성 및 경로 관리
+
+os.path.join()을 통해 폴더 경로와 파일 경로를 결합하는 방법을 학습합니다.
+os.makedirs()를 사용하여 디렉터리가 없을 경우 새로 생성하는 과정을 이해할 수 있습니다.
+
+2. requests 모듈을 이용한 HTTP 요청
+
+requests.get() 메서드를 사용해 웹 페이지의 HTML 콘텐츠를 가져오는 방법을 배울 수 있습니다.
+headers 매개변수를 통해 사용자 에이전트를 설정하여 요청을 보낼 때의 신뢰성을 높이는 기법을 익힙니다.
+
+3. 정규표현식 (re)을 사용한 이메일 주소 추출
+
+re.findall() 함수로 정규표현식을 사용하여 HTML에서 특정 패턴(이메일 주소)을 추출하는 방법을 학습합니다.
+중복 제거를 위해 list(set())을 사용하는 과정을 이해할 수 있습니다.
+
+4. openpyxl 모듈을 활용한 엑셀 파일 관리
+
+load_workbook()을 통해 기존의 엑셀 파일을 불러오는 방법을 배웁니다.
+파일이 없을 경우 예외 처리(FileNotFoundError)를 통해 새로운 엑셀 파일을 생성하고 헤더를 추가하는 로직을 익힙니다.
+
+5. 데이터 추가 및 저장
+
+엑셀 시트에 데이터를 한 행씩 추가하는 sheet.append() 메서드의 사용법을 학습합니다.
+wb.save()를 사용하여 변경된 내용을 엑셀 파일에 저장하는 과정을 배울 수 있습니다.
+
+6. 오류 처리와 코드 안정성 강화
+
+try-except 블록을 사용해 파일이 없을 때의 예외 상황을 처리하는 방법을 학습합니다.
+안정적인 데이터 처리를 위한 코드 구조 설계 방법을 익힐 수 있습니다.
