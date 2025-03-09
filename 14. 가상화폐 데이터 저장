@@ -1,0 +1,93 @@
+import pyupbit  # 업비트 API를 사용하여 암호화폐 데이터를 가져오는 라이브러리
+import sqlite3  # SQLite 데이터베이스와 상호작용하기 위한 라이브러리
+import datetime  # 날짜 및 시간 관련 기능을 제공하는 라이브러리
+
+# 날짜 범위를 생성하는 함수
+def date_range(start, end):
+    start = datetime.datetime.strptime(start, '%Y-%m-%d')  # 문자열을 datetime 객체로 변환
+    start = start + datetime.timedelta(days=1)  # 시작 날짜를 하루 뒤로 설정
+    end = datetime.datetime.strptime(end, '%Y-%m-%d')  # 종료 날짜를 datetime 객체로 변환
+    end = end + datetime.timedelta(days=1)  # 종료 날짜를 하루 뒤로 설정
+    
+    # 시작일부터 종료일까지 날짜 리스트 생성
+    dates = [(start + datetime.timedelta(days=i)).strftime('%Y-%m-%d') for i in range((end - start).days + 1)]
+    return dates
+
+# 2025년 3월 4일부터 2025년 3월 5일까지의 날짜 리스트 생성
+dates = date_range('2025-03-04', '2025-03-05')
+print(dates)  # 날짜 리스트 출력
+
+# 날짜 리스트를 역순으로 순회하면서 데이터 가져오기
+for day in reversed(dates):
+    myDay = day + ' 00:00'  # 시간 형식 수정 (공백 추가) 
+    # 날짜 + 시간 병합을 할 때 string 형태를 맞춰주기 위함입니다.
+    print(myDay)  # 처리 중인 날짜 출력
+
+    # 업비트 API를 통해 분봉 데이터 가져오기
+    ticker = 'KRW-XRP'  # 원화 마켓에서 XRP 코인 데이터 가져오기
+    interval = 'minute1'  # 1분봉 데이터 요청
+    to = myDay  # 특정 날짜 기준으로 데이터를 가져옴
+    count = 1440  # 하루치 1분봉 데이터 (1440개)
+
+    # 업비트 API 호출 (데이터프레임 반환)
+    price_now = pyupbit.get_ohlcv(ticker=ticker, interval=interval, to=to, count=count)
+
+    # API 응답이 정상인지 확인
+    if price_now is None:
+        print(f"⚠️ {myDay} 데이터 요청 실패. API 응답이 없습니다.")
+        continue  # 다음 날짜로 넘어감
+
+    print(price_now)  # 가져온 데이터 출력
+
+    # 데이터베이스 경로 설정
+    db_path = r"25. 가상화폐 데이터 획득하여 데이터베이스에 저장\coin.db"
+
+    # SQLite 데이터베이스 연결
+    con = sqlite3.connect(db_path, isolation_level=None)
+
+    # 데이터 저장 (테이블이 없으면 생성됨)
+    try:
+        price_now.to_sql('XRP', con, if_exists='append')
+        print(f"✅ {myDay} 데이터 저장 완료!")
+    except Exception as e:
+        print(f"❌ 데이터 저장 실패: {e}")
+
+    # 데이터베이스 연결 종료
+    con.close()
+
+
+** 학습내용 정리 **
+날짜 범위 생성 및 문자열 변환
+
+datetime.datetime.strptime()와 datetime.timedelta를 사용해 문자열을 datetime 객체로 변환하고, 
+날짜 범위를 생성하는 방법을 학습합니다. 반복문을 활용해 시작 날짜부터 종료 날짜까지의 날짜 리스트를 생성할 수 있습니다.
+
+업비트 API를 사용한 암호화폐 데이터 수집
+
+pyupbit.get_ohlcv()를 사용해 특정 암호화폐의 분봉 데이터를 가져오는 방법을 배웁니다. 
+ticker, interval, count와 같은 매개변수를 조정하여 원하는 데이터를 가져오는 기술을 익힐 수 있습니다.
+
+데이터베이스와의 상호작용
+
+sqlite3를 사용해 데이터베이스를 연결하고 데이터를 저장하는 과정을 학습합니다. 
+sqlite3.connect()로 데이터베이스를 연결하고, to_sql() 메서드로 데이터를 테이블에 삽입하는 방법을 익힐 수 있습니다.
+
+오류 처리와 예외 상황 관리
+
+try-except 블록을 사용해 API 요청 실패나 데이터 저장 오류를 처리하는 방법을 학습합니다. 
+응답 실패, 데이터베이스 충돌 등의 예외 상황에 대한 대처 기법을 이해할 수 있습니다.
+
+API 응답 데이터 검증 및 출력
+
+API 응답이 None인지 확인하여 비정상적인 요청에 대해 적절히 처리하는 로직을 배울 수 있습니다. 
+print()로 요청한 데이터를 출력하며 요청 상태와 데이터를 확인할 수 있습니다.
+
+날짜와 시간 형식 관리
+
+날짜와 시간을 조합하고, 적절한 형식으로 변경하여 데이터를 API에 전달하는 방식을 익힙니다. 
+문자열과 시간 데이터를 처리하여 다양한 형식으로 변환하는 기술을 학습합니다.
+
+반복문을 활용한 데이터 수집 자동화
+
+for 루프를 사용해 날짜 범위에 따라 자동으로 데이터를 가져오고 저장하는 방식을 익힐 수 있습니다. 
+역순으로 순회(reversed())하며 데이터 처리 순서를 제어할 수 있습니다.
