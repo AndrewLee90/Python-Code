@@ -1,0 +1,52 @@
+디스코드 채널 웹후크 정보를 활용, 파이썬으로 봇을 활용하는 방법.
+웹후크 URL이 있다는 가정하에 작성.
+
+import requests  # HTTP 요청을 보내기 위한 requests 모듈 가져오기
+
+# 디스코드 Webhook 메시지 전송 함수
+def send_discord_msg(msg, webhook):  # (input1 , input2)
+    headers = {
+        "Content-Type": "application/json"  # 요청 헤더: JSON 데이터 형식
+    }
+    json_data = {
+        "content": msg  # 메시지 내용
+    }
+    # HTTP POST 요청으로 Discord Webhook에 메시지 전송
+    requests.post(webhook, headers=headers, json=json_data)
+
+# Webhook URL (디스코드에서 생성한 Webhook URL)
+webhook = 'https://discord.com/api/webhooks/1344104003776020540/XX2lKHK8tlq-ieL-ㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁㅁ'
+
+# 함수 호출 > 메시지 전송
+send_discord_msg('test', webhook)
+send_discord_msg('test', webhook)
+send_discord_msg('test', webhook)
+
+#send_discord_msg (webhook, message)
+
+
+
+** 학습내용 정리 **
+requests 모듈을 활용한 HTTP 요청
+
+requests.post()를 사용하여 HTTP POST 요청을 보내고, Discord Webhook URL로 메시지를 전송하는 방법을 학습합니다. 
+헤더와 JSON 데이터 포맷을 설정하여 서버와의 통신을 구현하는 방법을 이해할 수 있습니다.
+
+Webhook 기반의 메시지 전송
+
+Discord Webhook을 활용해 특정 URL에 메시지를 전송하며, 간단한 봇 기능을 구현하는 기술을 익힐 수 있습니다. 
+Webhook URL의 보안 유지를 위해 민감한 정보를 공개하지 않도록 주의가 필요합니다.
+
+함수 설계와 재사용성
+
+send_discord_msg() 함수를 정의하여 메시지와 Webhook URL을 입력받아 전송하는 재사용 가능한 로직을 구현하는 방식을 학습합니다. 
+함수 호출을 통해 동일한 작업을 반복적으로 수행하고, 입력 값을 동적으로 변경할 수 있습니다.
+
+헤더와 JSON 데이터 구조
+
+Discord API와 같은 HTTP 요청에 필요한 Content-Type 헤더를 설정하고, POST 요청의 본문 데이터를 JSON 형식으로 전달하는 방법을 이해할 수 있습니다.
+
+REST API 활용 기초
+
+Discord Webhook을 REST API로 사용하여, 클라이언트에서 서버로 데이터를 전송하는 프로세스를 학습합니다. 
+HTTP 상태 코드와 API 응답을 기반으로 요청 성공 여부를 판단하는 로직을 추가할 수 있습니다.
