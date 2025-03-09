@@ -1,0 +1,153 @@
+# pygame 및 시스템 관련 라이브러리 임포트
+import pygame  # 게임 개발을 위한 라이브러리
+import sys  # 시스템 관련 기능을 위한 라이브러리 (예: 프로그램 종료)
+from pygame.locals import *  # pygame에서 제공하는 상수 사용
+import random  # 랜덤한 값 생성을 위한 라이브러리
+
+# 게임의 FPS 설정 (초당 프레임 수)
+FPS = 60
+
+# 게임 화면의 너비와 높이 설정
+MAX_WIDTH = 400  # 게임 화면 너비
+MAX_HEIGHT = 600  # 게임 화면 높이
+
+# pygame 초기화
+pygame.init()
+
+# FPS 조절을 위한 Clock 객체 생성
+clock = pygame.time.Clock()
+
+# 게임 화면 생성 (400x600 크기)
+screen = pygame.display.set_mode((MAX_WIDTH, MAX_HEIGHT))
+
+
+# 플레이어(파란색 네모)를 정의하는 클래스
+class Player():
+    def __init__(self, x, y):
+        # 플레이어의 초기 x, y 좌표 설정
+        self.x = x
+        self.y = y
+
+    # 플레이어를 화면에 그리는 메서드
+    def draw(self):
+        return pygame.draw.rect(screen, (0, 0, 255), (self.x, self.y, 40, 40))  # 파란색(0,0,255)의 네모(40x40)를 그림
+
+    # 플레이어 이동 처리 메서드
+    def move(self):
+        if pressed_keys[K_RIGHT]:  # 오른쪽 키가 눌렸다면
+            if self.x < MAX_WIDTH - 40:  # 화면을 벗어나지 않도록 제한
+                self.x += 5  # 오른쪽으로 5픽셀 이동
+        if pressed_keys[K_LEFT]:  # 왼쪽 키가 눌렸다면
+            if self.x > 0:  # 화면을 벗어나지 않도록 제한
+                self.x -= 5  # 왼쪽으로 5픽셀 이동
+
+
+# 적(똥) 객체를 정의하는 클래스
+class Enemy():
+    def __init__(self):
+        # 적의 초기 x 좌표를 랜덤하게 설정 (화면 범위 내에서 랜덤)
+        self.x = random.randrange(0, MAX_WIDTH - 40)
+        # 적의 초기 y 좌표 설정 (화면 상단에서 시작)
+        self.y = 50
+        # 적의 이동 속도를 랜덤하게 설정 (10~20 픽셀)
+        self.speed = random.randrange(10, 20)
+        # 적의 이미지 로드 (로컬 디렉토리에서 불러오기)
+        self.enemy = pygame.image.load(r'D:\INFO SECURITY\python\Code\36. 똥피하기 게임만들기\똥.png')
+        # 적의 이미지를 40x40 크기로 조정
+        self.enemy = pygame.transform.scale(self.enemy, (40, 40))
+
+    # 적을 화면에 그리는 메서드
+    def draw(self):
+        return screen.blit(self.enemy, (self.x, self.y))  # 적 이미지를 현재 위치에 그림
+
+    # 적을 아래로 이동시키는 메서드
+    def move(self):
+        self.y = self.y + self.speed  # 현재 y 위치에서 속도만큼 아래로 이동
+        if self.y >= MAX_HEIGHT:  # 화면 아래로 벗어나면
+            self.y = 50  # 다시 화면 위에서 시작
+            self.x = random.randrange(0, MAX_WIDTH - 40)  # x 좌표를 랜덤으로 변경
+            self.speed = random.randrange(7, 15)  # 속도도 랜덤으로 재설정
+
+
+# 플레이어 객체 생성 (초기 위치: 화면 하단 중앙)
+player = Player(MAX_WIDTH / 2, MAX_HEIGHT - 40)
+
+# 적 객체 생성
+enemy = Enemy()
+
+
+# 게임 실행을 위한 메인 함수
+def main():
+    while True:  # 무한 루프 (게임이 계속 실행됨)
+        for event in pygame.event.get():  # pygame 이벤트 처리
+            if event.type == pygame.QUIT:  # 게임 창을 닫으면
+                pygame.quit()  # pygame 종료
+                sys.exit()  # 프로그램 종료
+
+        clock.tick(FPS)  # 게임 루프를 FPS 값(60프레임)으로 설정하여 실행 속도 조절
+        screen.fill((255, 255, 255))  # 화면을 흰색(255,255,255)으로 채움 (이전 프레임 지우기)
+
+        global pressed_keys  # 전역 변수로 선언 (키 입력 받기)
+        pressed_keys = pygame.key.get_pressed()  # 현재 눌린 키를 가져옴
+
+        # 플레이어를 화면에 그림
+        player_rect = player.draw()
+        # 플레이어 이동 처리
+        player.move()
+
+        # 적을 화면에 그림
+        enemy_rect = enemy.draw()
+        # 적 이동 처리
+        enemy.move()
+
+        # 플레이어와 적이 충돌했는지 확인
+        if player_rect.colliderect(enemy_rect):  # 플레이어와 적이 겹치면
+            print("충돌")  # 콘솔에 "충돌" 출력
+            pygame.quit()  # pygame 종료
+            sys.exit()  # 프로그램 종료
+
+        pygame.display.update()  # 화면 업데이트 (변경된 내용 반영)
+
+
+# 게임 실행 (스크립트가 직접 실행될 경우 main() 호출)
+if __name__ == '__main__':
+    main()
+
+
+
+
+** 학습내용 정리 **
+Pygame을 활용한 게임 개발
+
+pygame 라이브러리를 사용하여 간단한 2D 게임을 구현하는 방법을 학습합니다. 
+게임 창 생성, 그래픽 그리기, 이벤트 처리, 충돌 감지, 프레임 속도 제어 등의 기본 게임 개발 개념을 익힐 수 있습니다.
+
+클래스 구조를 사용한 게임 객체 정의
+
+Player와 Enemy 클래스를 정의하여 플레이어와 적 캐릭터의 상태와 동작(그리기, 이동 등)을 관리하는 객체 지향 프로그래밍 기법을 학습합니다.
+
+플레이어 이동 구현
+
+키보드 입력(K_LEFT, K_RIGHT)을 감지하여 플레이어 캐릭터의 위치를 변경하고, 화면 경계를 벗어나지 않도록 제한하는 방법을 배울 수 있습니다.
+
+적 이동 및 화면 밖 처리
+
+적 캐릭터의 위치를 랜덤으로 초기화하고, 아래로 이동하도록 설계하며, 화면 아래로 벗어날 경우 다시 화면 상단에서 재등장하는 로직을 익힐 수 있습니다. 
+랜덤한 x 좌표와 속도를 설정하여 게임의 변화를 추가하는 방법을 이해할 수 있습니다.
+
+충돌 감지 구현
+
+colliderect() 메서드를 사용해 플레이어와 적의 충돌 여부를 확인하고, 충돌 시 게임을 종료하는 처리 로직을 배울 수 있습니다.
+
+FPS와 게임 화면 업데이트
+
+pygame.time.Clock()으로 초당 프레임 수(FPS)를 제한하여 부드러운 게임 실행을 구현하며, 
+pygame.display.update()를 통해 화면의 변경 사항을 반영하는 과정을 익힙니다.
+
+전역 키 이벤트 처리
+
+pygame.key.get_pressed()로 현재 눌린 키를 감지하고 이를 활용하여 실시간으로 캐릭터의 이동을 처리하는 방법을 학습합니다.
+
+무한 루프를 통한 게임 실행
+
+while True 루프를 사용해 게임이 지속적으로 실행되도록 설계하고, 이벤트(pygame.QUIT)를 통해 루프를 중단하는 기술을 학습합니다.
