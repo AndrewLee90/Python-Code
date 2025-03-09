@@ -1,0 +1,69 @@
+Qt Designer란?
+Qt Designer는 Qt 프레임워크에서 제공하는 GUI(그래픽 사용자 인터페이스) 설계 도구로, 
+사용자가 코드를 직접 작성하지 않고도 드래그 앤 드롭 방식으로 UI를 만들 수 있게 해줍니다. 
+주로 PyQt나 PySide 같은 파이썬 라이브러리와 함께 사용되며, 
+WYSIWYG(What You See Is What You Get) 방식으로 설계된 인터페이스가 실제 실행 결과와 동일하게 나타나는 특징이 있습니다. 
+이를 통해 개발자는 UI 레이아웃 작업을 효율적으로 수행하고, 복잡한 디자인 작업을 간소화할 수 있습니다.
+
+주요 기능: 위젯(버튼, 텍스트 입력창, 라벨 등)을 배치하고, 속성을 편집하며, 시그널-슬롯 연결을 설정할 수 있음.
+용도: 데스크톱 애플리케이션, 모바일 앱, 임베디드 시스템 등의 UI 설계.
+설치: PyQt5나 PySide2를 설치하면 함께 제공되며, 예를 들어 pip install pyqt5 명령어로 설치 가능.
+활용 방법
+Qt Designer를 효과적으로 활용하기 위한 단계를 정리했습니다. 포트폴리오에 포함시킬 수 있도록 실용적인 예시와 함께 설명합니다.
+
+1. Qt Designer 실행 및 기본 설정
+설치 확인: PyQt5 설치 후, 일반적으로 C:\PythonXX\Lib\site-packages\PyQt5\designer.exe에서 실행 파일을 찾을 수 있음(경로는 설치 환경에 따라 다름).
+새 프로젝트 시작: 프로그램 실행 후, "Main Window", "Dialog" 등 원하는 템플릿을 선택해 UI 설계를 시작.
+
+2. UI 설계
+위젯 추가: 왼쪽 "위젯 상자"에서 버튼(Push Button), 텍스트 입력(Line Edit), 라벨(Label) 등을 드래그해 중앙 창에 배치.
+속성 편집: 오른쪽 "속성 편집기"에서 위젯의 이름(objectName), 크기(geometry), 텍스트 등을 수정. 예: 버튼의 이름을 "submitButton"으로 변경.
+레이아웃 적용: 깔끔한 정렬을 위해 상단 툴바에서 수평/수직 레이아웃을 선택해 위젯을 배치.
+
+3. 파일 저장 및 파이썬 연동
+UI 파일 저장: 설계 완료 후 .ui 형식(XML 파일)으로 저장(예: main.ui).
+파이썬 코드로 변환: pyuic5 명령어를 사용해 .ui 파일을 .py 파일로 변환 가능.
+
+
+pyuic5 main.ui -o main_ui.py
+코드에서 활용: 변환된 파일을 불러와 기능 추가.
+python
+
+Collapse
+
+Wrap
+
+Copy
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from main_ui import Ui_MainWindow
+
+class MyApp(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+        self.ui.submitButton.clicked.connect(self.on_submit)  # 버튼 클릭 이벤트 연결
+
+    def on_submit(self):
+        print("Button clicked!")
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = MyApp()
+    window.show()
+    app.exec_()
+
+    
+4. 실무에서의 활용 예시
+간단한 계산기: 버튼과 입력창을 배치해 사칙연산 기능을 구현.
+로그인 창: 텍스트 입력창(Line Edit)과 버튼(Push Button)을 사용해 사용자 입력을 처리.
+데이터 시각화 도구: 테이블 위젯(Table Widget)을 추가해 데이터를 표시.
+5. 팁
+객체 이름 관리: 속성 편집기에서 각 위젯의 objectName을 명확히 설정해 코드에서 쉽게 접근.
+시그널-슬롯 연결: Qt Designer 내에서 기본 이벤트(예: 버튼 클릭)를 연결하거나, 코드에서 동적으로 추가.
+확장성: 복잡한 로직은 파이썬 코드로 보완하며, Qt Designer는 UI 설계에 집중.
+포트폴리오에 포함시킬 내용 제안
+설명: "Qt Designer는 GUI 설계를 위한 직관적인 도구로, 저는 이를 활용해 빠르고 효율적으로 사용자 인터페이스를 설계했습니다."
+활용 사례: "로그인 창과 계산기 UI를 Qt Designer로 제작 후, PyQt5를 통해 기능 구현."
+성과: "UI 설계 시간을 50% 단축하고, 코드 가독성을 높여 유지보수성을 개선."
