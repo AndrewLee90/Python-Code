@@ -1,0 +1,71 @@
+import socket
+# socket 모듈을 import하여 네트워크 관련 작업에 사용할 수 있도록 설정합니다.
+
+in_addr = socket.gethostbyname(socket.gethostname())
+# gethostname()으로 현재 호스트 이름을 가져오고,
+# gethostbyname()으로 해당 호스트의 IP 주소를 얻습니다.
+print(in_addr)
+# IP 주소를 출력합니다.
+
+import uuid
+# uuid 모듈을 import하여 고유 식별자와 관련된 작업을 수행할 수 있도록 합니다.
+
+def getMacAddress():
+    # MAC 주소를 가져오는 함수를 정의합니다.
+    mac = uuid.UUID(int=uuid.getnode()).hex[-12:]
+    # uuid.getnode()는 네트워크 인터페이스를 확인해 고유한 노드 값을 반환합니다.
+    # UUID 형식으로 변환한 후, 16진수(hex) 값의 마지막 12자리를 가져옵니다.
+    return ":".join([mac[e:e + 2] for e in range(0, 11, 2)])
+    # 가져온 12자리 16진수 값을 2자리씩 나눠 ':'로 결합하여 MAC 주소 형식으로 변환합니다.
+
+mac_address = getMacAddress()
+# 위에서 정의한 getMacAddress() 함수를 호출하여 MAC 주소를 가져옵니다.
+print(f"MAC Address: {mac_address}")
+# f-string을 사용하여 MAC 주소를 출력합니다.
+
+
+## 학습내용 정리 ##
+
+1. 네트워크 프로그래밍 기초
+
+socket 모듈을 사용하여 현재 호스트의 IP 주소를 얻는 방법을 학습합니다.
+uuid 모듈로 MAC 주소를 추출하는 방법을 배울 수 있습니다.
+
+2. Python 표준 라이브러리 사용법
+
+Python 내장 모듈인 socket과 uuid의 주요 기능을 익힐 수 있습니다.
+네트워크 프로그래밍에서 표준적으로 사용하는 패턴을 이해할 수 있습니다.
+
+3. 함수 정의와 활용
+
+def를 이용해 재사용 가능한 함수를 작성하고 호출하는 방법을 학습합니다.
+함수 내부에서 문자열 처리 및 데이터를 가공하는 기법을 연습할 수 있습니다.
+
+4. 문자열 조작 및 출력
+
+문자열을 조합하는 방법과 f-string을 사용해 출력 형식을 개선하는 기술을 익힐 수 있습니다.
+리스트 컴프리헨션을 사용해 2자리씩 문자열을 자르고 결합하는 프로세스를 배웁니다.
+
+5. Python의 코드 구조 이해
+
+모듈 import → 함수 정의 → 메인 코드 실행의 구조로 작성되는 Python 코드의 기본 패턴을 학습합니다.
+
+
+## 추가 설명 ##
+socket 모듈:
+
+네트워크와 관련된 작업을 수행할 수 있는 Python의 표준 라이브러리입니다.
+
+IP 주소를 얻는 데 사용한 gethostbyname() 함수는 특정 호스트 이름에 대해 IP 주소를 반환합니다.
+
+uuid 모듈:
+
+전역 고유 식별자(Universally Unique Identifier)를 생성하거나 관리하는 데 사용됩니다.
+
+uuid.getnode()는 하드웨어의 MAC 주소를 기반으로 노드 식별자를 반환합니다.
+
+문자열 조작 (리스트 컴프리헨션):
+
+[mac[e:e + 2] for e in range(0, 11, 2)]는 문자열을 2자리씩 잘라내는 반복 작업을 수행합니다.
+
+join() 메서드를 사용하여 :로 각 값을 연결해 일반적인 MAC 주소 형식(예: XX:XX:XX:XX:XX:XX)으로 변환합니다.
