@@ -1,0 +1,45 @@
+import psutil  # psutil 모듈을 import하여 시스템 리소스 정보를 확인할 수 있도록 설정합니다.
+
+cpu = psutil.cpu_freq()  # 현재 CPU의 속도 정보를 가져옵니다.
+print(cpu)  # 가져온 CPU 주파수 정보를 출력합니다.
+
+cpu_core = psutil.cpu_count(logical=False)  # CPU의 물리적 코어 수를 가져옵니다.
+print(cpu_core)  # 물리적 코어 수를 출력합니다.
+
+memory = psutil.virtual_memory()  # 현재 가상 메모리 상태를 가져옵니다.
+print(memory)  # 메모리 정보를 출력합니다.
+
+disk = psutil.disk_partitions()  # 시스템의 디스크 파티션 정보를 가져옵니다.
+print(disk)  # 디스크 파티션 정보를 출력합니다.
+
+net = psutil.net_io_counters()  # 네트워크 데이터 전송 및 수신 상태를 가져옵니다.
+print(net)  # 네트워크 데이터를 출력합니다.
+
+
+** 학습내용 정리 **
+
+1. psutil 모듈 사용법
+
+Python의 psutil 라이브러리를 활용하여 시스템 하드웨어 및 리소스 상태를 모니터링하는 방법을 학습할 수 있습니다.
+CPU, 메모리, 디스크, 네트워크 등의 정보를 효율적으로 가져오는 방법을 배울 수 있습니다.
+
+2. CPU 관련 데이터
+
+psutil.cpu_freq()를 통해 CPU의 주파수 정보(속도)를 확인하는 방법을 배울 수 있습니다.
+psutil.cpu_count(logical=False)를 사용해 물리적 CPU 코어 수를 가져오는 방법을 학습할 수 있습니다.
+
+3. 메모리 상태 확인
+
+psutil.virtual_memory()를 사용해 현재 시스템의 가상 메모리 상태(사용 가능 메모리, 총 메모리 등)를 확인하는 방법을 배웁니다.
+
+4. 디스크 정보 조회
+
+psutil.disk_partitions()로 시스템에 연결된 디스크 파티션 정보를 가져오는 방법을 학습합니다.
+
+5. 네트워크 데이터
+
+psutil.net_io_counters()를 통해 네트워크의 전송 및 수신 데이터량을 확인하는 방법을 배울 수 있습니다.
+
+6. Python의 출력 및 주석 활용
+
+각 데이터 출력을 print()로 출력하여 동작을 확인하고, 주석을 통해 코드의 목적과 동작 방식을 명확히 기록하는 방법을 익힐 수 있습니다.
