@@ -1,0 +1,94 @@
+import speech_recognition as sr  # 음성 인식을 위한 라이브러리
+
+# 🎯 사용 가능한 마이크 목록 출력
+mics = sr.Microphone.list_microphone_names()
+for index, name in enumerate(mics):
+    print(f"{index}: {name}")
+
+# 🔹 정확한 마이크 인덱스 확인
+mic_index = 3
+
+class speech2text:
+    def __init__(self, language='ko-KR', mic_index=None):  
+        self.recognizer = sr.Recognizer()  # Recognizer 객체 생성
+        self.language = language
+
+        # 🔹 마이크 인덱스가 유효한지 확인
+        if mic_index is None or mic_index >= len(mics):
+            print("⚠️ 올바른 마이크 인덱스를 설정해주세요!")
+            exit(1)  # 프로그램 종료
+        self.mic_index = mic_index  
+
+    def process_audio(self):
+        try:
+            with sr.Microphone(device_index=self.mic_index) as source:  
+                print('음성을 입력하세요.')
+                self.recognizer.adjust_for_ambient_noise(source)  # 🔹 주변 소음 조정
+                audio = self.recognizer.listen(source)
+
+            stt = self.recognizer.recognize_google(audio, language=self.language)  # 음성 데이터를 텍스트로 변환
+            print('음성변환: ' + stt)
+            self.handle_keywords(stt)  # 키워드 처리
+
+        except sr.UnknownValueError:
+            print('오디오를 이해할 수 없습니다.')  # 음성을 텍스트로 변환하지 못한 경우
+        except sr.RequestError as e:  
+            print(f'에러가 발생했습니다. 에러 원인: {e}')  # 요청 실패 시
+        except OSError as e:
+            print(f'⚠️ 마이크를 열 수 없습니다. 다른 앱에서 사용 중인지 확인하세요! 오류: {e}')  # 마이크 사용 불가
+
+    def handle_keywords(self, text):
+        # 텍스트에서 특정 키워드를 감지하고 반응
+        if '안녕' in text:
+            print('네, 안녕하세요.')
+        elif '날씨' in text:
+            print('정말 날씨가 좋네요')
+
+    def run(self):
+        '''음성 인식 프로세스를 계속 실행합니다.'''
+        try:
+            while True:
+                self.process_audio()  # 음성 인식 실행
+        except KeyboardInterrupt:
+            print('\n프로그램을 종료합니다.')  # 키보드 인터럽트로 종료
+
+if __name__ == '__main__':
+    processor = speech2text(language='ko-KR', mic_index=mic_index)  # 클래스 인스턴스 생성
+    processor.run()  # 음성 인식 실행
+
+
+
+
+** 학습내용 정리 **
+speech_recognition 모듈을 사용한 음성 입력 처리
+
+speech_recognition 라이브러리를 활용하여 음성을 텍스트로 변환(STT, Speech-to-Text)하는 방법을 학습합니다. 
+Microphone 클래스와 Recognizer 객체를 사용하여 음성 데이터를 캡처하고 변환하는 기술을 이해할 수 있습니다.
+
+마이크 설정 및 장치 관리
+
+Microphone.list_microphone_names()를 활용하여 사용 가능한 마이크 목록을 출력하고, 
+이를 통해 특정 마이크 인덱스를 설정하는 방법을 익힐 수 있습니다. 마이크 인덱스를 검증하여 올바른 장치가 설정되도록 하는 처리 로직을 구현합니다.
+
+주변 소음 조정
+
+adjust_for_ambient_noise() 메서드를 사용해 음성을 캡처하기 전, 주변 소음을 감지하고 조정하여 인식 성능을 높이는 방법을 학습합니다.
+
+예외 처리와 사용자 피드백
+
+try-except 블록을 활용해 음성 인식 과정에서 발생할 수 있는 다양한 오류(예: 마이크 사용 불가, 인식 실패)를 처리하고 
+사용자에게 적절한 메시지를 제공하는 방법을 익힐 수 있습니다. 
+오류 종류에 따라 UnknownValueError, RequestError, OSError를 처리하는 로직을 구현합니다.
+
+음성 키워드 처리
+
+음성 텍스트에서 특정 키워드(예: "안녕", "날씨")를 감지하고, 이에 따라 반응을 출력하는 간단한 이벤트 처리 기능을 학습합니다.
+
+무한 실행 루프 및 종료 처리
+
+while True 루프를 통해 음성 인식 프로세스를 지속적으로 실행하며, KeyboardInterrupt를 통해 키보드로 종료할 수 있도록 처리하는 방법을 학습합니다.
+
+클래스 기반 설계
+
+speech2text 클래스를 정의하여 음성 인식과 키워드 처리 기능을 캡슐화하고, 객체 지향적으로 구현하는 기술을 배울 수 있습니다. 
+클래스 생성자에서 초기 설정을 처리하고, 별도 메서드(process_audio, handle_keywords, run)로 기능을 분리하여 관리합니다.
