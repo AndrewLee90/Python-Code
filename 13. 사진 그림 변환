@@ -1,0 +1,88 @@
+import numpy as np  # NumPy 라이브러리 가져오기 (행렬 및 배열 연산)
+import cv2  # OpenCV 라이브러리 가져오기 (이미지 처리)
+
+# 이미지 파일을 바이너리 데이터로 불러옴 (경로 내 한글이 포함될 경우 대비)
+ff = np.fromfile(r'24. 사진을 그림으로 변환하기 (OpenCV)\image.jpg', np.uint8)
+
+# 바이너리 데이터를 이미지로 디코딩 (cv2.imdecode는 파일을 직접 읽지 않고 메모리에서 변환)
+img = cv2.imdecode(ff, cv2.IMREAD_UNCHANGED)
+
+# 이미지 크기 조정 (현재는 1.0배율이므로 원본 크기 유지, 사실상 불필요한 코드)
+img = cv2.resize(img, dsize=(0, 0), fx=1.0, fy=1.0, interpolation=cv2.INTER_LINEAR)
+
+# 트랙바가 변경될 때 호출되는 함수 (현재는 동작 없음)
+def onChange(pos):
+    pass
+
+# 트랙바를 조정할 수 있는 창을 생성
+cv2.namedWindow('Trackbar Windows')
+
+# sigma_s 트랙바 생성 (값 범위: 0 ~ 200, 변경 시 onChange 함수 호출)
+cv2.createTrackbar('sigma_s', 'Trackbar Windows', 0, 200, onChange)
+
+# sigma_r 트랙바 생성 (값 범위: 0 ~ 200, 변경 시 onChange 함수 호출)
+cv2.createTrackbar('sigma_r', 'Trackbar Windows', 0, 200, onChange)
+
+# sigma_s의 초기값을 100으로 설정
+cv2.setTrackbarPos('sigma_s', 'Trackbar Windows', 100)
+
+# sigma_r의 초기값을 10으로 설정
+cv2.setTrackbarPos('sigma_r', 'Trackbar Windows', 10)
+
+# 무한 루프 시작 (q 키 입력 시 종료)
+while True:
+    # 'q' 키가 입력되면 루프 종료
+    if cv2.waitKey(100) == ord('q'):
+        break
+
+    # 트랙바에서 sigma_s 값 가져오기 (0~200 범위)
+    sigma_s_value = cv2.getTrackbarPos('sigma_s', 'Trackbar Windows')
+
+    # 트랙바에서 sigma_r 값 가져오기 (0~200 범위) → 0.0~2.0 범위로 변환
+    sigma_r_value = cv2.getTrackbarPos('sigma_r', 'Trackbar Windows') / 100.0
+
+    # 현재 설정된 sigma_s 및 sigma_r 값 출력
+    print('sigma_s_value:', sigma_s_value)
+    print('sigma_r_value:', sigma_r_value)
+
+    # OpenCV 스타일라이제이션 필터 적용 (이미지를 카툰처럼 변환)
+    cartoon_img = cv2.stylization(img, sigma_s=sigma_s_value, sigma_r=sigma_r_value)
+
+    # 변환된 이미지를 트랙바 창에 표시
+    cv2.imshow('Trackbar Windows', cartoon_img)
+
+# 루프가 끝나면 모든 OpenCV 창 닫기
+cv2.destroyAllWindows()
+
+
+
+** 학습내용 정리 **
+
+NumPy와 OpenCV를 통한 이미지 로드 및 디코딩
+
+np.fromfile()을 사용하여 이미지 파일을 바이너리 데이터로 읽어오고, 
+cv2.imdecode()로 OpenCV에서 처리 가능한 형식으로 변환하는 방법을 학습합니다.
+
+이미지 크기 조정
+
+cv2.resize()를 사용하여 이미지 크기를 조정하고, 보간법(INTER_LINEAR)을 활용해 이미지 
+품질을 유지하는 방식을 배울 수 있습니다.
+
+트랙바를 활용한 사용자 입력 처리
+
+cv2.createTrackbar()와 cv2.getTrackbarPos()를 사용해 사용자로부터 입력을 받아 실시간으로 값을 
+조정하고 이를 프로그램에 반영하는 기법을 학습합니다.
+
+OpenCV 스타일라이제이션 필터 활용
+
+cv2.stylization()을 사용해 이미지를 카툰 스타일로 변환하는 필터를 적용하는 방법을 익힐 수 있습니다. 
+sigma_s와 sigma_r 값을 조정하여 스타일 효과를 미세하게 조절할 수 있습니다.
+
+OpenCV 창 관리
+
+cv2.namedWindow()로 사용자 인터페이스 창을 생성하고, cv2.imshow()로 이미지를 표시하는 과정을 학습합니다. 
+cv2.waitKey()와 cv2.destroyAllWindows()를 통해 창 제어 및 프로그램 종료를 다루는 방법을 익힐 수 있습니다.
+
+반복문을 사용한 실시간 처리
+
+while 루프를 활용해 실시간으로 사용자 입력을 받아 처리 결과를 시각적으로 확인하는 방법을 배울 수 있습니다.
